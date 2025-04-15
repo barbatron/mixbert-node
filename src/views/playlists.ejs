@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Spotify Playlists - MixBert</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f5f5f5;
+        }
+        .playlist-card {
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+        .playlist-card:hover {
+            transform: translateY(-5px);
+        }
+        .playlist-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-top-left-radius: calc(0.375rem - 1px);
+            border-top-right-radius: calc(0.375rem - 1px);
+        }
+        .playlist-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .navbar {
+            background-color: #1DB954;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">MixBert</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/playlists">Playlists</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-4">Your Spotify Playlists</h1>
+        <p class="lead mb-4">Select a playlist to sync to your Tidal account</p>
+
+        <div class="row">
+            <% if (playlists && playlists.length > 0) { %>
+                <% playlists.forEach(function(playlist) { %>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card playlist-card shadow-sm">
+                            <% if (playlist.images && playlist.images.length > 0) { %>
+                                <img src="<%= playlist.images[0].url %>" class="playlist-img" alt="<%= playlist.name %>">
+                            <% } else { %>
+                                <div class="playlist-img bg-secondary d-flex align-items-center justify-content-center">
+                                    <span class="text-white">No Image</span>
+                                </div>
+                            <% } %>
+                            <div class="card-body">
+                                <h5 class="card-title playlist-text"><%= playlist.name %></h5>
+                                <p class="card-text text-muted playlist-text">
+                                    <%= playlist.tracks.total %> tracks
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="/playlists/<%= playlist.id %>" class="btn btn-outline-secondary">View Details</a>
+                                    <a href="/sync/start/<%= playlist.id %>" class="btn btn-primary">Sync to Tidal</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        You don't have any playlists in your Spotify account or we couldn't access them.
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MixBert - Sync Spotify to Tidal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f5f5f5;
+        }
+        .service-card {
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .spotify-card {
+            background-color: #1DB954;
+            color: white;
+        }
+        .tidal-card {
+            background-color: #000000;
+            color: white;
+        }
+        .status-badge {
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin-left: 10px;
+        }
+        .logo {
+            max-height: 40px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="text-center mb-5">
+            <h1>MixBert</h1>
+            <p class="lead">Sync your Spotify playlists to Tidal</p>
+        </header>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">Welcome to MixBert</h2>
+                        <p class="card-text">
+                            This app allows you to sync your favorite Spotify playlists to your Tidal account.
+                            To get started, please connect both your Spotify and Tidal accounts.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="service-card spotify-card shadow">
+                            <h3>
+                                <svg class="logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.48.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" fill="white"/>
+                                </svg>
+                                Spotify
+                                <% if (isLoggedInToSpotify) { %>
+                                    <span class="status-badge bg-light text-success">Connected</span>
+                                <% } else { %>
+                                    <span class="status-badge bg-light text-dark">Not Connected</span>
+                                <% } %>
+                            </h3>
+                            <p>Connect your Spotify account to access your playlists.</p>
+                            <% if (isLoggedInToSpotify) { %>
+                                <a href="/playlists" class="btn btn-light">View Playlists</a>
+                            <% } else { %>
+                                <a href="/auth/spotify" class="btn btn-light">Connect Spotify</a>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="service-card tidal-card shadow">
+                            <h3>
+                                <svg class="logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12.012 3.992L8.008 7.996 4.004 3.992 0 7.996 4.004 12l4.004-4.004L12.012 12l-4.004 4.004 4.004 4.004 4.004-4.004L12.012 12l4.004-4.004-4.004-4.004zm7.984 0l-4.004 4.004L12.012 0 8.008 3.992l4.004 4.004 3.984-3.992 4.004 4.004L24 3.992l-4.004-4z" fill="white"/>
+                                </svg>
+                                Tidal
+                                <% if (isLoggedInToTidal) { %>
+                                    <span class="status-badge bg-light text-success">Connected</span>
+                                <% } else { %>
+                                    <span class="status-badge bg-light text-dark">Not Connected</span>
+                                <% } %>
+                            </h3>
+                            <p>Connect your Tidal account to sync playlists.</p>
+                            <% if (isLoggedInToTidal) { %>
+                                <button class="btn btn-light" disabled>Already Connected</button>
+                            <% } else { %>
+                                <a href="/auth/tidal" class="btn btn-light">Connect Tidal</a>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <% if (isLoggedInToSpotify && isLoggedInToTidal) { %>
+                    <div class="text-center mt-4">
+                        <a href="/playlists" class="btn btn-primary btn-lg">Start Syncing Playlists</a>
+                    </div>
+                <% } %>
+
+                <div class="text-center mt-5">
+                    <% if (isLoggedInToSpotify || isLoggedInToTidal) { %>
+                        <a href="/auth/logout" class="btn btn-outline-secondary">Logout</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
