@@ -22,6 +22,7 @@ export const TIDAL_CONFIG = {
   redirectUri: process.env.TIDAL_REDIRECT_URI!,
 };
 
+console.log("Config", { SPOTIFY_CONFIG, TIDAL_CONFIG });
 // Validate required environment variables
 export const validateConfig = (): boolean => {
   const requiredVars = [

@@ -2,8 +2,8 @@ import { finalizeLogin, init, initializeLogin } from "@tidal-music/auth";
 import express from "express";
 import SpotifyWebApi from "spotify-web-api-node";
 import { SPOTIFY_CONFIG, TIDAL_CONFIG } from "../config";
+import { credentialsStorageKey } from "../services/auth-service";
 
-const credentialsStorageKey = "mixbert";
 const router = express.Router();
 
 // Spotify API configuration
@@ -30,6 +30,7 @@ router.get("/spotify", (req, res) => {
 
 // Spotify callback
 router.get("/spotify/callback", async (req, res) => {
+  console.log("Spotify callback received", { req });
   const { code } = req.query;
 
   try {
@@ -84,6 +85,9 @@ router.get("/tidal/callback?code", async (req, res) => {
 
   try {
     await finalizeLogin(queryStr);
+    console.log("Tidal login finalized successfully");
+
+    req.session.tidalAuthTimestamp = new Date().toISOString();
 
     res.redirect("/");
   } catch (error) {

@@ -8,6 +8,7 @@ declare module 'express-session' {
     spotifyRefreshToken?: string;
     lastSyncResults?: SyncResults;
     tidalPlaylistId?: string;
+    tidalAuthTimestamp?: string;
   }
 }
 

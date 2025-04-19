@@ -1,38 +1,40 @@
 import { components } from '@tidal-music/api';
 import { createSpotifyApi, createTidalApi } from './auth-service';
-import { SpotifyTrack, TidalTrackSearchResult } from '../types';
-
+import { SpotifyTrack, TidalApiClient, TidalTrackSearchResult } from "../types";
 
 /**
  * Fetches all tracks from a Spotify playlist
  */
 export const getSpotifyPlaylistTracks = async (
-  playlistId: string, 
-  accessToken: string, 
+  playlistId: string,
+  accessToken: string,
   refreshToken: string
 ): Promise<SpotifyTrack[]> => {
   const spotifyApi = createSpotifyApi(accessToken, refreshToken);
-  
+
   let tracks: SpotifyTrack[] = [];
   let offset = 0;
   const limit = 100;
   let hasMoreTracks = true;
-  
+
   while (hasMoreTracks) {
-    const tracksData = await spotifyApi.getPlaylistTracks(playlistId, { offset, limit });
+    const tracksData = await spotifyApi.getPlaylistTracks(playlistId, {
+      offset,
+      limit,
+    });
     const fetchedTracks = tracksData.body.items
-      .filter(item => item.track) // Filter out null tracks
-      .map(item => item.track) as SpotifyTrack[];
-      
+      .filter((item) => item.track) // Filter out null tracks
+      .map((item) => item.track) as SpotifyTrack[];
+
     tracks = [...tracks, ...fetchedTracks];
-    
+
     if (tracksData.body.next) {
       offset += limit;
     } else {
       hasMoreTracks = false;
     }
   }
-  
+
   return tracks;
 };
 
@@ -40,24 +42,29 @@ export const getSpotifyPlaylistTracks = async (
  * Create a playlist on Tidal
  */
 export const createTidalPlaylist = async (
-  title: string, 
-  description: string, 
+  tidalApi: TidalApiClient,
+  title: string,
+  description: string
 ): Promise<components["schemas"]["Playlists_Single_Data_Document"]> => {
-  const tidalApi = createTidalApi();
-
-  const response = await tidalApi.POST("/playlists", { 
-    params: { query: { countryCode: 'SE', locale: 'en-US' } },
-    body: { 
+  const response = await tidalApi.POST("/playlists", {
+    params: { query: { countryCode: "SE", locale: "en-US" } },
+    body: {
       data: {
         type: "playlists",
-        attributes: { name: title, description: description, privacy: "PUBLIC" },
-      }  
-    }
+        attributes: {
+          name: title,
+          description: description,
+          privacy: "PUBLIC",
+        },
+      },
+    },
   });
-  
-  if (response.error) throw Error(`Error creating Tidal playlist: ${response.error}`);
-  if (!response.data) throw Error(`Error creating Tidal playlist: No data returned`);
-  return response.data
+
+  if (response.error)
+    throw Error(`Error creating Tidal playlist: ${response.error}`);
+  if (!response.data)
+    throw Error(`Error creating Tidal playlist: No data returned`);
+  return response.data;
 };
 
 /**

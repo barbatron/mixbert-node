@@ -6,11 +6,12 @@ import {
 } from "../services/playlist-service";
 import { searchTidalTrack } from "../services/tidal-client";
 import { SyncResults } from "../types";
+import { init } from "@tidal-music/auth";
 
 const router = express.Router();
 
 // Middleware to check if user is authenticated with both services
-const checkAuthForBothServices = (
+const checkAuthForBothServices = async (
   req: Request,
   res: Response,
   next: Function
@@ -18,7 +19,7 @@ const checkAuthForBothServices = (
   if (!req.session.spotifyAccessToken) {
     return res.redirect("/auth/spotify");
   }
-  const tidalApi = createTidalApi();
+  const tidalApi = await createTidalApi();
   tidalApi.GET("/users/me").catch((error) => {
     console.error("Error checking Tidal authentication:", error);
     if (error.statusCode === 401) {
@@ -56,14 +57,15 @@ router.get(
       const trackResponse = response.body as SpotifyApi.PlaylistTrackResponse;
       const tracks = trackResponse.items as SpotifyApi.PlaylistTrackObject[];
 
+      // Initialize Tidal API
+      const tidalApi = await createTidalApi(true);
+
       // Create new playlist on Tidal
       const tidalPlaylist = await createTidalPlaylist(
+        tidalApi,
         playlistName,
         playlistDescription
       );
-
-      // Initialize Tidal API
-      const tidalApi = createTidalApi();
 
       // Track matching and syncing status
       const syncResults: SyncResults = {
